@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SpiderBot_v2</title>
+		<style type="text/css">
+		canvas{border:#666 4px solid;}
+		body{
+			margin:10px;
+			padding:10px;
+			}
+		</style>
+		<meta charset="utf-8">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			var ctx;
+			var mouseX = mouseY = 0;
+			var xPosition = yPosition = 0;
+			var offX = offY = 0;
+			var color = 0;
+			
+			function drawShape()
+			{
+				var myCanvas = document.getElementById("myCanvas");
+				myCanvas.addEventListener('mousemove',handle_mouse);
+				myCanvas.addEventListener('mousedown',getClickPosition,false);
+				ctx = myCanvas.getContext("2d");
+				var interval = setInterval(animate,1);
+				offX = myCanvas.offsetLeft; // offset of canvas
+				offY = myCanvas.offsetTop; //offset of canvas
+				
+			}
+			
+			function animate()
+			{ 
+				drawLine(mouseX,mouseY);
+			}
+					
+			// To draw 4 lines from rectangle vertices to the point of mouse pointer
+			function drawLine(x,y)
+			{
+				ctx.clearRect(0,0,400,400);
+				ctx.beginPath();
+				
+				ctx.moveTo(0,0);
+				ctx.lineTo(x,y);
+				
+				ctx.moveTo(400,0);
+				ctx.lineTo(x,y);
+				
+				ctx.moveTo(0,400);
+				ctx.lineTo(x,y);
+				
+				ctx.moveTo(400,400);
+				ctx.lineTo(x,y);
+				
+				ctx.rect(x-10,y-10,20,20); // rectangle at the intersection of lines
+				ctx.fillStyle = 'red';     // fill rectangle with red color
+				ctx.fill();
+				ctx.lineWidth = 5;
+				
+				ctx.strokeStyle = 'rgb(255,0,0)'; // For making line color red
+				ctx.stroke();
+				$.post('SpiderBot_v5.php',{post_x:mouseX,post_y:mouseY});
+				
+			}
+			
+			function handle_mouse(event)
+			{	
+				mouseX = event.layerX - offX;
+				mouseY = event.layerY - offY;
+			}
+			
+			function getClickPosition(e)
+			{
+				xPosition = e.clientX - offX ;
+				yPosition = e.clientY - offY;
+				alert("x :- " +xPosition+ "y :- " +yPosition); 
+				//$.post('SpiderBot_v4.php',{post_x:xPosition,post_y:yPosition});
+			}
+			function store_color(color_recieved)
+			{
+				color = color_recieved;
+				post_to_php();
+				//$.post('SpiderBot_v4.php',{postcolor:color});
+			}
+			
+			function post_to_php()
+			{
+				//$.post('SpiderBot_FrontEnd_PHP.php',{postcolor:color,post_x:xPosition,post_y:yPosition});
+			}
+			
+		</script>		
+	</head>
+	<body >
+		<canvas onmouseover="drawShape()" id="myCanvas" width="400" height="400" onclick="mouseClickEvent();">
+			<!--Insert fallback content here -->
+			sorry your browser doesn't support canvas technology
+		</canvas>
+		
+		<form>
+			<input type="button" value="Red" onclick="store_color('r')">
+			<input type="button" value="Yellow" onclick="store_color('y')">
+			<input type="button" value="Blue" onclick="store_color('b')">
+			<input type="button" value="Green" onclick="store_color('g')">
+		</form>
+		
+	</body>
+</html>
